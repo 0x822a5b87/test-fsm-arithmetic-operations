@@ -112,25 +112,22 @@ stream -->|char| tokenizer -->|token| parser
 
 ### tokenizer
 
-```mermaid
----
-config:
-  flowchart:
-    defaultRenderer: elk
----
+> **注意：事实上，我们有更多更好的方式来实现 `tokenizer`， 这里只是单纯的出于学习状态机的目的才如此实现。**
 
+```mermaid
 flowchart LR
 
-ready("ready"):::ptr
-error("error"):::error
+StartGroup("StartGroup"):::ptr
+EndGroup("EndGroup"):::ptr
+NewOperator("NewOperator"):::ptr
+AppendDigit("AppendDigit"):::ptr
 
-ready -->|"APPEND_DIGIT<br>[0-9]"| ready
-ready -->|"NEW_OPERATOR<br>[+-*/]"| ready
-ready -->|"START_GROUP<br>("| ready
-ready -->|"END_GROUP<br>)"| ready
-ready -->|"SKIP<br>\t\r\n)"| ready
+StartGroup -->|"APPEND_DIGIT<br>[0-9]"| AppendDigit
+AppendDigit -->|"APPEND_DIGIT<br>[0-9]"| AppendDigit
+AppendDigit -->|"END_GROUP<br>)"| EndGroup
+AppendDigit -->|"NEW_OPERATOR<br>[+-*/])"| NewOperator
+NewOperator -->|"START_GROUP<br>[()])"| StartGroup
 
-ready -->|"other char"|error
 
 classDef error 1,fill:#FFCCCC,stroke:#333;
 classDef ptr fill: #696,color: #fff,font-weight: bold;
@@ -138,44 +135,32 @@ classDef ptr fill: #696,color: #fff,font-weight: bold;
 
 ### parser
 
+![parser](./resources/parser.png)
+
+## 代码实现
+
+再回到我们最开始提到的状态机逻辑，整个状态的处理过程可以抽象为如下步骤：
+
 ```mermaid
----
-config:
-    flowchart:
-        defaultRenderer: elk
----
+sequenceDiagram
 
-flowchart LR
+participant Input
+participant FSM
+participant Output
 
-number("number"):::ptr
-add_or_sub("add_or_sub"):::ptr
-mul_or_div("mul_or_div"):::ptr
-start_group("start_group"):::green
-end_group("end_group"):::ptr
-
-start_group -->|"("| start_group
-start_group -->|number| number
-
-number -->|"[+-]"| add_or_sub
-number -->|"*/"| mul_or_div
-number -->|")"| end_group
-
-add_or_sub -->|number| number
-add_or_sub -->|"("| start_group
-
-mul_or_div -->|number| number
-mul_or_div -->|"("| start_group
+FSM ->> FSM : init state
+Note over FSM : State
 
 
-classDef purple color:#FFFFFF,fill:#AA00FF,stroke:#AA00FF;
-classDef green color:#FFFFFF, stroke:#00C853, fill:#00C853
-classDef error 1,fill:#FFCCCC,stroke:#333;
-classDef ptr fill: #696,color: #fff,font-weight: bold;
-classDef back fill:#969,stroke:#333;
-classDef op fill:#bbf,stroke:#f66,stroke-width:2px,color:#fff,stroke-dasharray: 5 5
+loop NewEvent
+    Input -->> FSM : Event
+    Note over FSM : State<br/>Event
+    FSM -->> Output : Action
+    FSM ->> FSM : transition
+    Note over FSM : State(new)<br/>Event
+end
 ```
 
 ## 参考
 
 - [What Is a Finite State Machine (FSM)? Meaning, Working, and Examples](https://www.spiceworks.com/tech/tech-general/articles/what-is-fsm/)
-
