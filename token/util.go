@@ -2,7 +2,7 @@ package token
 
 import "unicode"
 
-func isDigit(event TokenizerEvent) bool {
+func isDigit(event tokenizerEvent) bool {
 	e := byte(event)
 	return unicode.IsDigit(rune(e))
 }
