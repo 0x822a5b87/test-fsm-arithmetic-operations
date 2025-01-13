@@ -26,6 +26,19 @@ func TestTokenizer_TwoNumberOp(t *testing.T) {
 	testTwoNumberOp(t, "123456 / 41152")
 }
 
+func TestTokenizer_ThreeNumberOp(t *testing.T) {
+	tokenFsm := NewTokenizerFsm("123 + 456 * 789")
+	states := []fsm.State{
+		AppendDigit,
+		NewOperator,
+		AppendDigit,
+		NewOperator,
+		AppendDigit,
+		End,
+	}
+	assertState(t, tokenFsm, states)
+}
+
 func TestTokenizer_Parentheses(t *testing.T) {
 	tokenFsm := NewTokenizerFsm("(123 + 456) * 789")
 	states := []fsm.State{
