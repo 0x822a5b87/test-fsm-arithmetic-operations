@@ -3,13 +3,14 @@ package token
 import "fmt"
 
 const (
-	TokenNumber = iota
+	TokenNumber TokenType = iota
 	TokenAdd
 	TokenSub
 	TokenMul
 	TokenDiv
 	TokenLb
 	TokenRb
+	TokenEOF
 )
 
 type TokenType int

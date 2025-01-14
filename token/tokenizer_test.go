@@ -8,15 +8,15 @@ import (
 
 func TestNew(t *testing.T) {
 	tokenFsm := NewTokenizerFsm("")
-	if tokenFsm.state != StartGroup {
-		t.Errorf("expected state [%d], actual state [%d]", StartGroup, tokenFsm.state)
+	if tokenFsm.state != startGroup {
+		t.Errorf("expected state [%d], actual state [%d]", startGroup, tokenFsm.state)
 	}
 }
 
 func TestTokenizer_SingleNumber(t *testing.T) {
 	tokenFsm := NewTokenizerFsm("12345")
 	peekAndExec(t, tokenFsm)
-	assert.Equal(t, AppendDigit, tokenFsm.state)
+	assert.Equal(t, appendDigit, tokenFsm.state)
 }
 
 func TestTokenizer_TwoNumberOp(t *testing.T) {
@@ -29,12 +29,12 @@ func TestTokenizer_TwoNumberOp(t *testing.T) {
 func TestTokenizer_ThreeNumberOp(t *testing.T) {
 	tokenFsm := NewTokenizerFsm("123 + 456 * 789")
 	states := []fsm.State{
-		AppendDigit,
-		NewOperator,
-		AppendDigit,
-		NewOperator,
-		AppendDigit,
-		End,
+		appendDigit,
+		newOperator,
+		appendDigit,
+		newOperator,
+		appendDigit,
+		end,
 	}
 	assertState(t, tokenFsm, states)
 }
@@ -42,14 +42,14 @@ func TestTokenizer_ThreeNumberOp(t *testing.T) {
 func TestTokenizer_Parentheses(t *testing.T) {
 	tokenFsm := NewTokenizerFsm("(123 + 456) * 789")
 	states := []fsm.State{
-		StartGroup,
-		AppendDigit,
-		NewOperator,
-		AppendDigit,
-		EndGroup,
-		NewOperator,
-		AppendDigit,
-		End,
+		startGroup,
+		appendDigit,
+		newOperator,
+		appendDigit,
+		endGroup,
+		newOperator,
+		appendDigit,
+		end,
 	}
 	assertState(t, tokenFsm, states)
 }
@@ -57,20 +57,20 @@ func TestTokenizer_Parentheses(t *testing.T) {
 func TestTokenizer_MulParentheses(t *testing.T) {
 	tokenFsm := NewTokenizerFsm("12 + (34 + 56) * (78 / 90)")
 	states := []fsm.State{
-		AppendDigit,
-		NewOperator,
-		StartGroup,
-		AppendDigit,
-		NewOperator,
-		AppendDigit,
-		EndGroup,
-		NewOperator,
-		StartGroup,
-		AppendDigit,
-		NewOperator,
-		AppendDigit,
-		EndGroup,
-		End,
+		appendDigit,
+		newOperator,
+		startGroup,
+		appendDigit,
+		newOperator,
+		appendDigit,
+		endGroup,
+		newOperator,
+		startGroup,
+		appendDigit,
+		newOperator,
+		appendDigit,
+		endGroup,
+		end,
 	}
 	assertState(t, tokenFsm, states)
 }
@@ -85,10 +85,10 @@ func assertState(t *testing.T, fsm *TokenizerFsm, states []fsm.State) {
 func testTwoNumberOp(t *testing.T, input string) {
 	tokenFsm := NewTokenizerFsm(input)
 	states := []fsm.State{
-		AppendDigit,
-		NewOperator,
-		AppendDigit,
-		End,
+		appendDigit,
+		newOperator,
+		appendDigit,
+		end,
 	}
 	assertState(t, tokenFsm, states)
 }

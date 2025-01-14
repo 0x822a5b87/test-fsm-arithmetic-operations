@@ -15,12 +15,12 @@ func (cs *charStream) peekEvent() tokenizerEvent {
 
 func (cs *charStream) getNextEvent(isIncIndex bool) tokenizerEvent {
 	if cs.index >= len(cs.data) {
-		return Null
+		return null
 	}
 	var ch tokenizerEvent
 	for {
 		ch = tokenizerEvent(cs.data[cs.index])
-		if ch == Space || ch == Tab || ch == Return || ch == NewLine {
+		if ch == space || ch == tab || ch == r || ch == newLine {
 			cs.index++
 		} else {
 			break
